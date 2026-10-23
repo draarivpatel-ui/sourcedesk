@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; script-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';"
+  />
+  <title>SourceDesk | Civic Lateral-Reading &amp; Media Verification Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="brand-cluster">
+        <span class="brand-mark">
+          <svg class="brand-mark-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <line x1="7" y1="9" x2="17" y2="9" />
+            <line x1="7" y1="13" x2="13" y2="13" />
+            <circle cx="16.5" cy="14.5" r="2.5" />
+          </svg>
+          SourceDesk
+        </span>
+        <span class="brand-subline" id="metric-progress-count">0 of 6 Dispatches Stamped</span>
+      </div>
+
+      <div class="masthead-controls" role="toolbar" aria-label="Newsroom desk controls">
+        <button type="button" class="desk-btn" id="btn-toggle-audio" aria-pressed="false">
+          <svg class="desk-btn-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+          </svg>
+          <span class="audio-label-text">Desk Audio: Active</span>
+        </button>
+
+        <button type="button" class="desk-btn" id="btn-print-guide">
+          <svg class="desk-btn-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <polyline points="6 9 6 2 18 2 18 9" />
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+            <rect x="6" y="14" width="12" height="8" />
+          </svg>
+          <span>Print Field Guide</span>
+        </button>
+
+        <button type="button" class="desk-btn" id="btn-reset-desk">
+          <svg class="desk-btn-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <polyline points="1 4 1 10 7 10" />
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+          </svg>
+          <span>Reset Shift</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero-ledger" aria-label="Newsroom verification overview">
+      <div class="hero-copy-column">
+        <h1>Investigate Before You Amplify.</h1>
+        <p class="hero-lead">
+          You are on the evening verification desk. Viral flood claims, miracle study headlines, imposter relief links, and synthetic voice memos are hitting community feeds. Use lateral-reading instruments to cross-check WHOIS registries, raw chart baselines, and primary telemetry before issuing your editorial stamp.
+        </p>
+
+        <div class="telemetry-strip" role="region" aria-label="Live shift score and civic impact telemetry">
+          <div class="telemetry-cell">
+            <div class="telemetry-value" id="metric-total-score">0</div>
+            <div class="telemetry-caption">Desk Score (0-600)</div>
+          </div>
+          <div class="telemetry-cell">
+            <div class="telemetry-value" id="metric-streak">0 (MAX 0)</div>
+            <div class="telemetry-caption">Verification Streak</div>
+          </div>
+          <div class="telemetry-cell">
+            <div class="telemetry-value" id="metric-shares-prevented">0</div>
+            <div class="telemetry-caption">Civic Reach Protected</div>
+          </div>
+          <div class="telemetry-cell">
+            <div class="telemetry-value" id="metric-trust-rating">S / Senior Standards Editor</div>
+            <div class="telemetry-caption">Editorial Standing</div>
+          </div>
+        </div>
+      </div>
+
+      <figure class="hero-artwork-frame">
+        <img
+          src="./img/newsroom-desk-hero.jpg"
+          alt="Isometric mid-century verification desk with magnifying loupe over newsprint, mechanical verdict stamp, lateral-reading evidence cards, and spectral oscilloscope"
+          class="hero-artwork-img"
+          width="1280"
+          height="720"
+        />
+        <figcaption class="hero-artwork-caption">
+          <span>FIG 1. LATERAL VERIFICATION WORKBENCH</span>
+          <span>4 INSTRUMENTS / 6 CIVIC DISPATCHES</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <section class="newsroom-workspace" aria-label="Interactive dispatch investigation desk">
+      <aside class="wire-queue-panel" aria-label="Incoming wire dispatch switcher">
+        <div class="wire-queue-header">
+          <h2>Incoming Wire Queue</h2>
+          <span class="wire-progress-badge">Select Any Dispatch</span>
+        </div>
+        <div class="scenario-switcher-list" id="scenario-switcher" role="list"></div>
+
+        <div class="shortcut-legend">
+          <h3>Desk Keyboard Shortcuts</h3>
+          <div class="shortcut-grid">
+            <div><span class="kbd-chip">1</span> WHOIS Probe</div>
+            <div><span class="kbd-chip">2</span> Media Forensics</div>
+            <div><span class="kbd-chip">3</span> Primary Source</div>
+            <div><span class="kbd-chip">4</span> Rhetoric Scan</div>
+            <div><span class="kbd-chip">V</span> Stamp Verified</div>
+            <div><span class="kbd-chip">M</span> Stamp Misleading</div>
+            <div><span class="kbd-chip">F</span> Stamp Fabricated</div>
+            <div><span class="kbd-chip">N</span> Next Dispatch</div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="dossier-stage">
+        <article class="dispatch-dossier-card" aria-live="polite">
+          <div class="dossier-meta-bar">
+            <div class="dossier-badges">
+              <span class="badge-mono" id="dispatch-code-badge">SD-2026-01</span>
+              <span class="badge-mono" id="dispatch-category-badge">Civic Emergency Claim</span>
+              <span class="badge-mono" id="dispatch-timestamp">23:42 LOCAL</span>
+            </div>
+            <span class="badge-velocity" id="dispatch-velocity">18,400 est. shares/hr</span>
+          </div>
+
+          <h2 class="dossier-headline" id="dispatch-headline">
+            Emergency Nighttime Dam Release Flooding Highway 6
+          </h2>
+          <div class="dossier-source-line" id="dispatch-source">
+            @BrazosValleyAlertNow (riverwatch-daily-buzz.net)
+          </div>
+
+          <div class="claim-quote-box">
+            <p class="claim-quote-text" id="dispatch-claim-copy"></p>
+          </div>
+          <p class="claim-context-note" id="dispatch-context-note"></p>
+
+          <div class="forensic-loupe-section">
+            <div class="forensic-loupe-header">
+              <h3 id="artifact-title">Photographic Frame Comparison</h3>
+              <div class="compare-mode-group" role="group" aria-label="Artifact comparison view selector">
+                <button type="button" class="compare-mode-btn is-active" data-compare-mode="both" aria-pressed="true">
+                  Side-by-Side
+                </button>
+                <button type="button" class="compare-mode-btn" data-compare-mode="viral" aria-pressed="false">
+                  Viral Claim Only
+                </button>
+                <button type="button" class="compare-mode-btn" data-compare-mode="verified" aria-pressed="false">
+                  Primary Archive Only
+                </button>
+              </div>
+            </div>
+
+            <div class="artifact-comparison-grid">
+              <div class="artifact-pane" id="artifact-viral-box"></div>
+              <div class="artifact-pane" id="artifact-verified-box"></div>
+            </div>
+
+            <div class="forensic-svg-wrapper" id="artifact-svg-holder"></div>
+          </div>
+        </article>
+
+        <section class="probes-section" aria-label="Lateral-reading forensic instruments">
+          <div class="probes-section-header">
+            <h2>Lateral-Reading Instruments</h2>
+            <span class="probe-counter-text" id="probe-counter-status">
+              0 of 4 Probes Inspected
+            </span>
+          </div>
+          <div class="probes-grid" id="probes-grid"></div>
+        </section>
+
+        <section class="stamp-press-section" aria-label="Editorial verdict stamp press">
+          <div class="stamp-press-header">
+            <h2>Issue Editorial Verdict Stamp</h2>
+            <button type="button" class="desk-btn" id="btn-next-dispatch">
+              <span>Next Dispatch [N]</span>
+              <svg class="desk-btn-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="stamp-buttons-row">
+            <button
+              type="button"
+              class="stamp-btn stamp-verified"
+              data-stamp-type="VERIFIED_BULLETIN"
+              aria-pressed="false"
+            >
+              <span class="stamp-btn-top">
+                <span>VERIFIED BULLETIN</span>
+                <span>[V]</span>
+              </span>
+              <span class="stamp-btn-desc">
+                Primary .gov or peer-reviewed telemetry matches claim with neutral framing.
+              </span>
+            </button>
+
+            <button
+              type="button"
+              class="stamp-btn stamp-misleading"
+              data-stamp-type="MISLEADING_CONTEXT"
+              aria-pressed="false"
+            >
+              <span class="stamp-btn-top">
+                <span>MISLEADING CONTEXT</span>
+                <span>[M]</span>
+              </span>
+              <span class="stamp-btn-desc">
+                Recycled old photo, truncated chart axis, or tiny unblinded study hyped out of scale.
+              </span>
+            </button>
+
+            <button
+              type="button"
+              class="stamp-btn stamp-fabricated"
+              data-stamp-type="FABRICATED_IMPOSTER"
+              aria-pressed="false"
+            >
+              <span class="stamp-btn-top">
+                <span>FABRICATED / IMPOSTER</span>
+                <span>[F]</span>
+              </span>
+              <span class="stamp-btn-desc">
+                Typosquatted scam domain, synthetic voice clone, or zero agency corroboration.
+              </span>
+            </button>
+          </div>
+
+          <div class="debrief-panel is-idle" id="editorial-debrief-panel" aria-live="polite"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="custom-verifier-section" aria-label="Custom claim and headline lateral-reading verifier">
+      <div class="custom-verifier-card">
+        <div class="custom-verifier-left">
+          <h2>Custom Claim &amp; Headline Verifier Checklist</h2>
+          <p class="custom-verifier-intro">
+            Testing a real-world post, forwarded message, or study headline outside the 6 dispatches? Paste the headline below and toggle any lateral-reading red flags you observe to compute a live Credibility Risk Score.
+          </p>
+
+          <div class="custom-input-group">
+            <label class="custom-input-label" for="custom-claim-input">
+              Headline or Forwarded Claim Text
+            </label>
+            <input
+              type="text"
+              id="custom-claim-input"
+              class="custom-headline-input"
+              placeholder="Paste a viral headline or message (e.g., URGENT!! Claim your storm grant before midnight!)"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="custom-checklist-stack" id="custom-claim-checklist"></div>
+        </div>
+
+        <div class="custom-verifier-right" aria-live="polite">
+          <h3>Live Credibility Risk Assessment</h3>
+          <div class="risk-meter-row">
+            <span class="risk-score-number" id="custom-risk-score">0 / 100</span>
+            <span class="recommended-stamp-pill" id="custom-recommended-stamp">VERIFIED BULLETIN</span>
+          </div>
+          <div class="verdict-summary-line" id="custom-verdict-label">
+            LOW RISK: PROCEED WITH PRIMARY VERIFICATION
+          </div>
+          <ul class="remediation-list" id="custom-remediation-list"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="newsroom-footer">
+    <div class="footer-inner">
+      <p>
+        <strong>SourceDesk Civic Media Literacy Game:</strong> Built for the Girls Who Code HHS Hackathon 2026 ("Level up your gameplay, level up the world. Build a game for social good"). Teaches Stanford History Education Group (Civic Online Reasoning) lateral-reading habits across health, weather, environmental data, and phishing defense.
+      </p>
+      <p>
+        <strong>Verification &amp; Disclosure Note:</strong> Playtesting and scoring balance were verified via an automated bot simulation harness across 592,704 simulated clue-inspection and decision combinations (<code>scripts/verify-playtest-matrix.js</code>), not human subjects. Built with AI coding and illustration assistance per Girls Who Code HHS Hackathon Rule 2.
+      </p>
+    </div>
+  </footer>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

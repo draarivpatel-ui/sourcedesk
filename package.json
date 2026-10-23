@@ -1,0 +1,12 @@
+{
+  "name": "sourcedesk",
+  "version": "1.0.0",
+  "description": "SourceDesk: Civic Lateral-Reading and Media Verification Desk Game for the Girls Who Code HHS Hackathon 2026",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/sourcedesk.test.js",
+    "verify:matrix": "node scripts/verify-playtest-matrix.js"
+  },
+  "license": "MIT"
+}
