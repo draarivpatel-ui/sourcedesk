@@ -5,7 +5,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "test": "node --test tests/sourcedesk.test.js",
+    "test": "node --test tests/sourcedesk.test.js tests/dom-smoke.test.js",
     "verify:matrix": "node scripts/verify-playtest-matrix.js"
   },
   "license": "MIT"

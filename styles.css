@@ -32,6 +32,11 @@
   color: var(--bg-paper);
 }
 
+html,
+body {
+  overflow-x: clip;
+}
+
 html {
   background-color: var(--bg-paper);
   color: var(--ink-primary);
@@ -68,7 +73,37 @@ body {
   margin: 0;
   background-color: var(--bg-paper);
   color: var(--ink-primary);
-  overflow-x: hidden;
+}
+
+.skip-link {
+  position: absolute;
+  top: -3.5rem;
+  left: 1rem;
+  z-index: 1000;
+  padding: 0.55rem 0.95rem;
+  background-color: var(--ink-primary);
+  color: var(--bg-paper);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 4px;
+  border: 2px solid var(--vermilion-stamp);
+  transition: top 160ms var(--ease-out-expo);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  top: 0.75rem;
+}
+
+.noscript-banner {
+  background-color: var(--amber-surface);
+  color: var(--amber-context);
+  border-bottom: 1px solid var(--amber-context);
+  padding: 0.75rem 1.5rem;
+  font-size: 0.86rem;
+  text-align: center;
 }
 
 a {
