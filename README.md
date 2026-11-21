@@ -27,7 +27,7 @@
 - **Custom Claim & Headline Verifier Lab:**
   - Students can paste any real-world headline or forwarded message and toggle five lateral-reading red flags to compute a live Credibility Risk Score (`0-100`) and remediation checklist.
 - **Synthesized Web Audio & Printable Field Guide:**
-  - Uses the browser Web Audio API to synthesize tactile mechanical relay and stamp acoustics (with a one-click mute toggle) and formats cleanly into a 1-page printable Lateral Reading Field Guide via `Cmd/Ctrl + P`.
+  - Uses the browser Web Audio API to synthesize tactile mechanical relay and stamp acoustics (with a one-click mute toggle) and formats into a printable Lateral Reading Field Guide via `Cmd/Ctrl + P`.
 
 ## Automated Bot Playtest Matrix & Verification
 

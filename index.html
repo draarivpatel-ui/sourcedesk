@@ -60,6 +60,19 @@
           <span class="audio-label-text">Desk Audio: Active</span>
         </button>
 
+        <button type="button" class="desk-btn" id="btn-toggle-keys" aria-pressed="true">
+          <svg class="desk-btn-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="2" y="6" width="20" height="12" rx="2" />
+            <line x1="6" y1="10" x2="8" y2="10" />
+            <line x1="11" y1="10" x2="13" y2="10" />
+            <line x1="16" y1="10" x2="18" y2="10" />
+            <line x1="6" y1="14" x2="9" y2="14" />
+            <line x1="11" y1="14" x2="15" y2="14" />
+            <line x1="17" y1="14" x2="18" y2="14" />
+          </svg>
+          <span class="keys-label-text">Desk Keys: On</span>
+        </button>
+
         <button type="button" class="desk-btn" id="btn-print-guide">
           <svg class="desk-btn-svg" viewBox="0 0 24 24" aria-hidden="true">
             <polyline points="6 9 6 2 18 2 18 9" />
@@ -102,7 +115,7 @@
             <div class="telemetry-caption">Civic Reach Protected</div>
           </div>
           <div class="telemetry-cell">
-            <div class="telemetry-value" id="metric-trust-rating">S / Senior Standards Editor</div>
+            <div class="telemetry-value" id="metric-trust-rating">C / Provisional Copy Desk</div>
             <div class="telemetry-caption">Editorial Standing</div>
           </div>
         </div>
@@ -147,7 +160,7 @@
       </aside>
 
       <div class="dossier-stage">
-        <article class="dispatch-dossier-card" aria-live="polite">
+        <article class="dispatch-dossier-card">
           <div class="dossier-meta-bar">
             <div class="dossier-badges">
               <span class="badge-mono" id="dispatch-code-badge">SD-2026-01</span>
@@ -157,7 +170,7 @@
             <span class="badge-velocity" id="dispatch-velocity">18,400 est. shares/hr</span>
           </div>
 
-          <h2 class="dossier-headline" id="dispatch-headline">
+          <h2 class="dossier-headline" id="dispatch-headline" aria-live="polite">
             Emergency Nighttime Dam Release Flooding Route 9
           </h2>
           <div class="dossier-source-line" id="dispatch-source">
@@ -305,6 +318,8 @@
         </div>
       </div>
     </section>
+
+    <section id="print-guide" class="print-guide" aria-hidden="true"></section>
   </main>
 
   <footer class="newsroom-footer">

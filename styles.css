@@ -44,7 +44,6 @@ html {
   font-size: 16px;
   line-height: 1.55;
   caret-color: var(--vermilion-stamp);
-  scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: var(--ink-secondary) var(--bg-card);
 }
@@ -1187,7 +1186,12 @@ p {
   }
 }
 
-/* Printable 1-Page Lateral Reading Field Guide */
+/* Print-only field guide: hidden on screen, expanded on paper */
+.print-guide {
+  display: none;
+}
+
+/* Printable Lateral Reading Field Guide */
 @media print {
   body {
     background: #FFFFFF;
@@ -1218,4 +1222,38 @@ p {
     page-break-inside: avoid;
     margin-bottom: 0.6rem;
   }
+
+  .print-guide {
+    display: block;
+  }
+
+  .print-guide-heading {
+    font-size: 14pt;
+    margin: 0.4rem 0 0.2rem;
+  }
+
+  .print-guide-shortcuts {
+    font-size: 9pt;
+    margin: 0 0 0.4rem;
+  }
+
+  .print-guide-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.5pt;
+  }
+
+  .print-guide-table th,
+  .print-guide-table td {
+    border: 1px solid #000000;
+    padding: 3px 5px;
+    text-align: left;
+    vertical-align: top;
+  }
+}
+
+.debrief-note {
+  font-size: 0.8rem;
+  color: var(--ink-tertiary);
+  margin: 0.5rem 0 0;
 }

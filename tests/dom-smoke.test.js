@@ -138,6 +138,24 @@ test("DOM Smoke 19: all 6 dispatches and 4 probes per dispatch are free of em/en
   assert.equal(CUSTOM_CLAIM_SIGNALS.length, 5);
 });
 
+test("DOM Smoke 20a: styles.css never enables smooth scroll behavior", () => {
+  assert.equal(/scroll-behavior\s*:\s*smooth/.test(stylesCss), false);
+});
+
+test("DOM Smoke 20b: WCAG 2.1.4 desk-keys toggle button and print-only field guide mount point exist", () => {
+  assert.match(indexHtml, /id="btn-toggle-keys"/);
+  assert.match(indexHtml, /id="print-guide"/);
+});
+
+test("DOM Smoke 20c: live region is scoped to the dispatch headline, not the whole dossier card", () => {
+  assert.equal(/<article\s+class="dispatch-dossier-card"\s+aria-live/.test(indexHtml), false);
+  assert.match(indexHtml, /id="dispatch-headline"\s+aria-live="polite"/);
+});
+
+test("DOM Smoke 20d: initial editorial standing placeholder matches the computed C grade", () => {
+  assert.match(indexHtml, /id="metric-trust-rating">C \/ Provisional Copy Desk</);
+});
+
 test("DOM Smoke 20: full 6-dispatch game loop achieves 585/600 S-Rank when key probes and correct stamps are applied", () => {
   let state = createInitialGameState();
   for (const d of DISPATCHES) {

@@ -482,12 +482,14 @@ export function createInitialGameState() {
     currentIndex: 0,
     inspectedProbesByDispatch: {},
     decisionsByDispatch: {},
+    answerLog: [],
     streak: 0,
     maxStreak: 0,
     totalScore: 0,
     sharesPrevented: 0,
     verifiedReachSupported: 0,
     audioMuted: false,
+    shortcutsEnabled: true,
   };
 }
 
@@ -615,11 +617,39 @@ export function submitDispatchStamp(state, dispatchId, selectedStamp) {
     throw new Error(`Unknown dispatch id: ${String(dispatchId)}`);
   }
 
-  // Prevent double-scoring if already stamped; allow idempotent read or clean re-evaluation
   const previousDecision = state.decisionsByDispatch[dispatchId];
   const inspectedProbes = getInspectedProbes(state, dispatchId);
+  const priorLog = Array.isArray(state.answerLog) ? state.answerLog : [];
 
-  const baseStreak = previousDecision ? previousDecision.streakBefore : state.streak;
+  if (previousDecision) {
+    // A re-stamp is filed as a correction: it updates the recorded stamp label
+    // but first-attempt scoring (roundScore, streak, impact) stays frozen.
+    const revisedDecision = {
+      ...previousDecision,
+      selectedStamp,
+      revisedFromFirstAttempt:
+        previousDecision.revisedFromFirstAttempt ||
+        !Object.is(previousDecision.selectedStamp, selectedStamp),
+    };
+    return {
+      ...state,
+      decisionsByDispatch: {
+        ...state.decisionsByDispatch,
+        [dispatchId]: revisedDecision,
+      },
+    };
+  }
+
+  // First attempt: the live streak is the trailing run of correct answers in
+  // chronological answer order, independent of dispatch order on the wire.
+  let baseStreak = 0;
+  for (let i = priorLog.length - 1; i >= 0; i -= 1) {
+    if (priorLog[i] && priorLog[i].isCorrect === true) {
+      baseStreak += 1;
+    } else {
+      break;
+    }
+  }
   const result = calculateRoundScore({
     dispatch,
     selectedStamp,
@@ -634,16 +664,17 @@ export function submitDispatchStamp(state, dispatchId, selectedStamp) {
       selectedStamp,
       correctStamp: dispatch.correctStamp,
       streakBefore: baseStreak,
+      revisedFromFirstAttempt: false,
       ...result,
     },
   };
+
+  const answerLog = [...priorLog, { dispatchId, isCorrect: result.isCorrect }];
 
   // Recompute aggregate totals across all recorded decisions deterministically
   let totalScore = 0;
   let sharesPrevented = 0;
   let verifiedReachSupported = 0;
-  let runningStreak = 0;
-  let maxStreak = 0;
 
   for (const item of DISPATCHES) {
     const dec = nextDecisions[item.id];
@@ -651,21 +682,17 @@ export function submitDispatchStamp(state, dispatchId, selectedStamp) {
       totalScore += dec.roundScore;
       sharesPrevented += dec.sharesPreventedDelta;
       verifiedReachSupported += dec.verifiedReachDelta;
-      if (dec.isCorrect) {
-        runningStreak += 1;
-        if (runningStreak > maxStreak) {
-          maxStreak = runningStreak;
-        }
-      } else {
-        runningStreak = 0;
-      }
     }
   }
+
+  const streak = result.isCorrect ? baseStreak + 1 : 0;
+  const maxStreak = Math.max(state.maxStreak || 0, streak);
 
   return {
     ...state,
     decisionsByDispatch: nextDecisions,
-    streak: runningStreak,
+    answerLog,
+    streak,
     maxStreak,
     totalScore,
     sharesPrevented,
@@ -738,7 +765,10 @@ export function evaluateCustomClaim(activeSignalIds = [], headlineText = "") {
   let verdictLabel = "LOW RISK: PROCEED WITH PRIMARY VERIFICATION";
   if (clampedRisk >= 52 || activeSet.has("domainSpoof")) {
     recommendedStamp = STAMP_TYPES.FABRICATED_IMPOSTER;
-    verdictLabel = "HIGH RISK: HOLD & QUARANTINE AS LIKELY IMPOSTER / FABRICATED";
+    verdictLabel =
+      clampedRisk >= 52
+        ? "HIGH RISK: HOLD & QUARANTINE AS LIKELY IMPOSTER / FABRICATED"
+        : "DOMAIN IMPOSTER FLAG: QUARANTINE PENDING EDITORIAL REVIEW";
   } else if (clampedRisk >= 24) {
     recommendedStamp = STAMP_TYPES.MISLEADING_CONTEXT;
     verdictLabel = "MODERATE RISK: AUDIT FOR MISSING OR DISTORTED CONTEXT";
@@ -809,6 +839,13 @@ export function toggleAudioMute(state) {
   return {
     ...state,
     audioMuted: !state.audioMuted,
+  };
+}
+
+export function toggleKeyboardShortcuts(state) {
+  return {
+    ...state,
+    shortcutsEnabled: !state.shortcutsEnabled,
   };
 }
 

@@ -19,6 +19,7 @@ import {
   selectDispatchIndex,
   advanceToNextDispatch,
   toggleAudioMute,
+  toggleKeyboardShortcuts,
   getDispatchProgressSummary,
 } from "../js/sourcedesk-engine.js";
 
@@ -83,8 +84,10 @@ describe("SourceDesk Core Verification & Lateral-Reading Engine", () => {
     assert.equal(state.sharesPrevented, 0);
     assert.equal(state.verifiedReachSupported, 0);
     assert.equal(state.audioMuted, false);
+    assert.equal(state.shortcutsEnabled, true);
     assert.deepEqual(state.inspectedProbesByDispatch, {});
     assert.deepEqual(state.decisionsByDispatch, {});
+    assert.deepEqual(state.answerLog, []);
   });
 
   it("6. getInspectedProbes safely handles invalid state or dispatchId", () => {
@@ -303,13 +306,23 @@ describe("SourceDesk Core Verification & Lateral-Reading Engine", () => {
     state = submitDispatchStamp(state, d3.id, STAMP_TYPES.VERIFIED_BULLETIN);
     assert.equal(state.streak, 0);
     assert.equal(state.maxStreak, 2);
+    const frozenScore = state.totalScore;
+    const frozenDecision = state.decisionsByDispatch[d3.id];
 
-    // Re-submitting d3 with correct stamp uses streakBefore and restores streak
+    // Re-stamping d3 files a correction: the stamp label updates but the
+    // first-attempt score, streak, and impact stay frozen.
     state = inspectProbe(state, d3.id, d3.keyProbes[0]);
     state = inspectProbe(state, d3.id, d3.keyProbes[1]);
     state = submitDispatchStamp(state, d3.id, d3.correctStamp);
-    assert.equal(state.streak, 3);
-    assert.equal(state.maxStreak, 3);
+    const revised = state.decisionsByDispatch[d3.id];
+    assert.equal(revised.selectedStamp, d3.correctStamp);
+    assert.equal(revised.revisedFromFirstAttempt, true);
+    assert.equal(revised.isCorrect, false);
+    assert.equal(revised.roundScore, frozenDecision.roundScore);
+    assert.equal(state.totalScore, frozenScore);
+    assert.equal(state.streak, 0);
+    assert.equal(state.maxStreak, 2);
+    assert.equal(state.answerLog.length, 3);
   });
 
   it("20. submitDispatchStamp throws on unknown dispatchId", () => {
@@ -649,6 +662,72 @@ describe("SourceDesk Core Verification & Lateral-Reading Engine", () => {
     state = inspectProbe(state, "dispatch-02-miracle-study", "primary");
     assert.deepEqual(getInspectedProbes(state, "dispatch-01-flood-release"), ["whois"]);
     assert.deepEqual(getInspectedProbes(state, "dispatch-02-miracle-study"), ["primary"]);
+  });
+
+  it("49. blind-stamp-then-revise exploit cannot recover the first-attempt score or accuracy", () => {
+    let state = createInitialGameState();
+    const d1 = DISPATCHES[0];
+    const wrongStamp = STAMP_TYPES.FABRICATED_IMPOSTER === d1.correctStamp
+      ? STAMP_TYPES.VERIFIED_BULLETIN
+      : STAMP_TYPES.FABRICATED_IMPOSTER;
+    state = submitDispatchStamp(state, d1.id, wrongStamp);
+    const first = state.decisionsByDispatch[d1.id];
+    assert.equal(first.isCorrect, false);
+    const frozenScore = first.roundScore;
+
+    // Exploit path: read the revealed answer, inspect key probes, re-stamp correctly.
+    state = inspectProbe(state, d1.id, d1.keyProbes[0]);
+    state = inspectProbe(state, d1.id, d1.keyProbes[1]);
+    state = submitDispatchStamp(state, d1.id, d1.correctStamp);
+    const revised = state.decisionsByDispatch[d1.id];
+    assert.equal(revised.selectedStamp, d1.correctStamp);
+    assert.equal(revised.revisedFromFirstAttempt, true);
+    assert.equal(revised.isCorrect, false);
+    assert.equal(revised.roundScore, frozenScore);
+    const summary = getDispatchProgressSummary(state);
+    assert.equal(summary.accuracyPercent, 0);
+    assert.equal(summary.correctCount, 0);
+  });
+
+  it("50. streak follows chronological answer order, not dispatch index order", () => {
+    let state = createInitialGameState();
+    // Answer dispatches 6..2 correctly (wire order reversed), then miss dispatch 1 last.
+    for (let i = DISPATCHES.length - 1; i >= 1; i -= 1) {
+      state = submitDispatchStamp(state, DISPATCHES[i].id, DISPATCHES[i].correctStamp);
+    }
+    assert.equal(state.streak, 5);
+    assert.equal(state.maxStreak, 5);
+    state = submitDispatchStamp(state, DISPATCHES[0].id, STAMP_TYPES.FABRICATED_IMPOSTER);
+    assert.equal(state.decisionsByDispatch[DISPATCHES[0].id].isCorrect, false);
+    assert.equal(state.streak, 0);
+    assert.equal(state.maxStreak, 5, "maxStreak is a monotonic high-water mark");
+    // A correction re-stamp does not count as a new answer event.
+    state = submitDispatchStamp(state, DISPATCHES[5].id, STAMP_TYPES.VERIFIED_BULLETIN);
+    assert.equal(state.answerLog.length, 6);
+    assert.equal(state.streak, 0);
+    assert.equal(state.decisionsByDispatch[DISPATCHES[5].id].revisedFromFirstAttempt, true);
+    assert.equal(state.decisionsByDispatch[DISPATCHES[5].id].isCorrect, true);
+  });
+
+  it("51. toggleKeyboardShortcuts flips the WCAG 2.1.4 shortcut gate immutably", () => {
+    const state = createInitialGameState();
+    const off = toggleKeyboardShortcuts(state);
+    assert.equal(off.shortcutsEnabled, false);
+    assert.equal(state.shortcutsEnabled, true);
+    const on = toggleKeyboardShortcuts(off);
+    assert.equal(on.shortcutsEnabled, true);
+  });
+
+  it("52. domainSpoof alone recommends imposter with a flag label, not a numeric HIGH RISK claim", () => {
+    const res = evaluateCustomClaim(["domainSpoof"], "Routine city bulletin");
+    assert.equal(res.riskScore, 28);
+    assert.equal(res.recommendedStamp, STAMP_TYPES.FABRICATED_IMPOSTER);
+    assert.match(res.verdictLabel, /DOMAIN IMPOSTER FLAG/);
+    const scoreHigh = evaluateCustomClaim(
+      ["missingPrimary", "croppedOrTruncated", "conflictOfInterest"],
+      "Calm headline"
+    );
+    assert.match(scoreHigh.verdictLabel, /HIGH RISK/);
   });
 });
 

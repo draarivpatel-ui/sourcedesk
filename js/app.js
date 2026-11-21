@@ -18,6 +18,7 @@ import {
   selectDispatchIndex,
   advanceToNextDispatch,
   toggleAudioMute,
+  toggleKeyboardShortcuts,
   getDispatchProgressSummary,
 } from "./sourcedesk-engine.js";
 
@@ -38,7 +39,10 @@ function ensureAudioContext() {
     audioCtx = new AudioContextCtor();
   }
   if (Object.is(audioCtx.state, "suspended")) {
-    audioCtx.resume().catch(() => {});
+    const resumeResult = audioCtx.resume();
+    if (resumeResult && typeof resumeResult.catch === "function") {
+      resumeResult.catch(() => {});
+    }
   }
   return audioCtx;
 }
@@ -210,6 +214,15 @@ function renderTopTelemetry() {
       labelSpan.textContent = gameState.audioMuted ? "Desk Audio: Muted" : "Desk Audio: Active";
     }
   }
+
+  const keysBtn = document.getElementById("btn-toggle-keys");
+  if (keysBtn) {
+    keysBtn.setAttribute("aria-pressed", gameState.shortcutsEnabled ? ATTR_TRUE : ATTR_FALSE);
+    const keysLabel = keysBtn.querySelector(".keys-label-text");
+    if (keysLabel) {
+      keysLabel.textContent = gameState.shortcutsEnabled ? "Desk Keys: On" : "Desk Keys: Off";
+    }
+  }
 }
 
 function renderActiveDispatch() {
@@ -345,9 +358,14 @@ function renderActiveDispatch() {
       debriefPanel.className = "debrief-panel is-idle";
     } else {
       const verdictClass = decision.isCorrect ? "is-correct" : "is-incorrect";
-      const statusHeadline = decision.isCorrect
-        ? `VERDICT CONFIRMED: ${STAMP_LABELS[decision.correctStamp]} (+${decision.roundScore} PTS)`
-        : `EDITORIAL CORRECTION NEEDED: Expected ${STAMP_LABELS[decision.correctStamp]} (+${decision.roundScore} PTS)`;
+      const statusHeadline = decision.revisedFromFirstAttempt
+        ? `CORRECTION FILED as ${STAMP_LABELS[decision.selectedStamp]}: first attempt stands (${decision.roundScore} PTS)`
+        : decision.isCorrect
+          ? `VERDICT CONFIRMED: ${STAMP_LABELS[decision.correctStamp]} (+${decision.roundScore} PTS)`
+          : `EDITORIAL CORRECTION NEEDED: Expected ${STAMP_LABELS[decision.correctStamp]} (+${decision.roundScore} PTS)`;
+      const revisionNote = decision.revisedFromFirstAttempt
+        ? `<p class="debrief-note">Re-stamping files a correction; the first stamped attempt determines score, streak, and accuracy.</p>`
+        : "";
 
       debriefPanel.className = `debrief-panel ${verdictClass}`;
       debriefPanel.innerHTML = `
@@ -358,6 +376,7 @@ function renderActiveDispatch() {
             <span class="score-breakdown-pill">Evidence: +${decision.evidencePoints}</span>
             <span class="score-breakdown-pill">Efficiency: +${decision.efficiencyBonus}</span>
             <span class="score-breakdown-pill">Streak Bonus: +${decision.streakBonus}</span>
+            <span class="score-breakdown-pill">Probes at stamp: ${decision.probesInspectedCount}</span>
             ${
               decision.blindGuessPenalty
                 ? `<span class="score-breakdown-pill is-penalty">Blind Stamp Penalty: -${decision.blindGuessPenalty}</span>`
@@ -366,6 +385,7 @@ function renderActiveDispatch() {
           </div>
         </div>
         <p class="debrief-copy">${dispatch.debrief}</p>
+        ${revisionNote}
       `;
     }
   }
@@ -426,11 +446,77 @@ function renderAll() {
   renderCustomClaimVerifier();
 }
 
+// Dynamic regions rebuild their DOM on every render; carry keyboard focus
+// across the rebuild so keyboard and screen-reader users keep their place.
+const FOCUSABLE_REBUILT =
+  "[data-dispatch-index],[data-probe-key],[data-stamp-type],[data-compare-mode]," +
+  "#btn-next-dispatch,#btn-reset-desk,#btn-toggle-audio,#btn-toggle-keys,#btn-print-guide";
+
+function focusSelectorFor(el) {
+  if (!(el instanceof Element)) {
+    return null;
+  }
+  const hit = el.closest(FOCUSABLE_REBUILT);
+  if (!hit) {
+    return null;
+  }
+  if (hit.id) {
+    return `#${hit.id}`;
+  }
+  if (typeof hit.dataset.dispatchIndex === "string") {
+    return `[data-dispatch-index="${hit.dataset.dispatchIndex}"]`;
+  }
+  if (typeof hit.dataset.probeKey === "string") {
+    return `[data-probe-key="${hit.dataset.probeKey}"]`;
+  }
+  if (typeof hit.dataset.stampType === "string") {
+    return `[data-stamp-type="${hit.dataset.stampType}"]`;
+  }
+  if (typeof hit.dataset.compareMode === "string") {
+    return `[data-compare-mode="${hit.dataset.compareMode}"]`;
+  }
+  return null;
+}
+
+function rerender() {
+  const selector = focusSelectorFor(document.activeElement);
+  renderAll();
+  if (selector) {
+    const target = document.querySelector(selector);
+    if (target instanceof HTMLElement) {
+      target.focus();
+    }
+  }
+}
+
+// Print-only field guide: key findings and verdicts for all 6 dispatches so a
+// fresh print still teaches the lateral-reading method.
+function renderPrintGuide() {
+  const holder = document.getElementById("print-guide");
+  if (!holder) {
+    return;
+  }
+  const rows = DISPATCHES.map((d) => {
+    const findings = d.keyProbes
+      .map((k) => `${PROBE_METADATA[k].title}: ${d.probes[k].findingTag}. ${d.probes[k].summary}`)
+      .join(" ");
+    return `<tr><td>${d.code}</td><td>${d.headline}</td><td>${STAMP_LABELS[d.correctStamp]}</td><td>${findings}</td></tr>`;
+  }).join("");
+  holder.innerHTML = `
+    <h2 class="print-guide-heading">Lateral Reading Field Guide</h2>
+    <p class="print-guide-shortcuts">Desk keys: 1-4 run the four probes, V / M / F apply verdict stamps, N advances the wire queue.</p>
+    <table class="print-guide-table">
+      <thead><tr><th>Code</th><th>Dispatch</th><th>Verdict</th><th>Key Findings</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
 function handleProbeActivate(probeKey) {
   const currentDispatch = DISPATCHES[gameState.currentIndex];
   gameState = inspectProbe(gameState, currentDispatch.id, probeKey);
   playMechanicalSound("probe");
-  renderAll();
+  rerender();
 }
 
 function handleStampSubmit(stampType) {
@@ -438,13 +524,13 @@ function handleStampSubmit(stampType) {
   gameState = submitDispatchStamp(gameState, currentDispatch.id, stampType);
   const dec = gameState.decisionsByDispatch[currentDispatch.id];
   playMechanicalSound(dec && dec.isCorrect ? "stamp-correct" : "stamp-wrong");
-  renderAll();
+  rerender();
 }
 
 function handleNextDispatch() {
   gameState = advanceToNextDispatch(gameState);
   playMechanicalSound("probe");
-  renderAll();
+  rerender();
 }
 
 function initSourceDeskApp() {
@@ -453,6 +539,7 @@ function initSourceDeskApp() {
   }
 
   renderAll();
+  renderPrintGuide();
 
   document.addEventListener("click", (event) => {
     const tabBtn = event.target.closest("[data-dispatch-index]");
@@ -460,7 +547,7 @@ function initSourceDeskApp() {
       const idx = Number(tabBtn.getAttribute("data-dispatch-index"));
       gameState = selectDispatchIndex(gameState, idx);
       playMechanicalSound("probe");
-      renderAll();
+      rerender();
       return;
     }
 
@@ -497,12 +584,28 @@ function initSourceDeskApp() {
 
     if (event.target.closest("#btn-reset-desk")) {
       gameState = createInitialGameState();
-      renderAll();
+      activeCustomSignals.clear();
+      archiveComparisonMode = "both";
+      document.querySelectorAll(".custom-signal-checkbox").forEach((cb) => {
+        cb.checked = false;
+      });
+      document.querySelectorAll("[data-compare-mode]").forEach((b) => {
+        const active = Object.is(b.getAttribute("data-compare-mode"), "both");
+        b.classList.toggle("is-active", active);
+        b.setAttribute("aria-pressed", active ? ATTR_TRUE : ATTR_FALSE);
+      });
+      rerender();
       return;
     }
 
     if (event.target.closest("#btn-toggle-audio")) {
       gameState = toggleAudioMute(gameState);
+      renderTopTelemetry();
+      return;
+    }
+
+    if (event.target.closest("#btn-toggle-keys")) {
+      gameState = toggleKeyboardShortcuts(gameState);
       renderTopTelemetry();
       return;
     }
@@ -533,6 +636,9 @@ function initSourceDeskApp() {
   }
 
   document.addEventListener("keydown", (event) => {
+    if (!gameState.shortcutsEnabled) {
+      return;
+    }
     const tag = event.target && event.target.tagName ? event.target.tagName.toLowerCase() : "";
     const isInput = Object.is(tag, "input") || Object.is(tag, "textarea") || Object.is(tag, "select");
     if (event.metaKey || event.ctrlKey || event.altKey) {

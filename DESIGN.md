@@ -24,4 +24,4 @@ SourceDesk rejects generic dark-neon cyber dashboards and SaaS card grids in fav
 
 - **Zero Kicker/Eyebrow Labels:** Headings carry their own structural weight without uppercase labels stacked above them.
 - **Custom Browser Surfaces:** Custom `::selection` in vermilion and paper, custom scrollbars, visible `2px` `:focus-visible` outlines, and full keyboard navigation (`1-4`, `V`, `M`, `F`, `N`).
-- **Reduced Motion & Print Ready:** Respects `@media (prefers-reduced-motion: reduce)` and includes a `@media print` 1-page Lateral Reading Field Guide layout.
+- **Reduced Motion & Print Ready:** Respects `@media (prefers-reduced-motion: reduce)` and includes a `@media print` Lateral Reading Field Guide layout.
