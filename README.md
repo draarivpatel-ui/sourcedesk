@@ -26,6 +26,13 @@
   - Stamping a dispatch without inspecting any lateral evidence triggers a `-25` blind-guess penalty.
 - **Custom Claim & Headline Verifier Lab:**
   - Students can paste any real-world headline or forwarded message and toggle five lateral-reading red flags to compute a live Credibility Risk Score (`0-100`) and remediation checklist.
+- **Calibration & Scoring Lab (`js/calibration-lab.js`):**
+  - **5-Editor Strategy Comparator:** deterministic replays of `blind-guesser`, `single-probe-skimmer`, `evidence-efficient`, `exhaustive-four-probe`, and `contrarian-flip` through the real scoring engine, reporting exact total score, accuracy, blind-stamp penalties, efficiency bonuses, average probes per dispatch, and streak trajectory (`evidence-efficient` scores `585`, strictly dominating blind guessing at `106`).
+  - **6 x 16 Probe-Signal Payoff Matrix:** an interactive SVG heatmap of every `2^4` probe-inspection subset across all six dispatches, proving the two highest-signal probes maximize score-per-probe efficiency (`47.5`) versus blind stamping (`35` at zero probes) and exhaustive four-probing (`22.5` per probe).
+  - **5 Custom-Claim Stress Presets:** one-click typosquat SMS, truncated Y-axis chart, unblinded `n=11` study, verified `.gov` heat alert, and synthetic audio memo profiles scored through the real risk engine (`0-100`).
+  - **SHA-256 Audited Desk Brief Exporter:** pure-JS FIPS 180-4 hashing stamps one canonical digest across the on-page fingerprint, JSON export, formula-safe CSV provenance header, and Markdown footer, with an interactive tamper-verification demo.
+  - **`#sd=` URL-Hash Bookmark Codec:** strict, fail-closed round-trip of the active editor strategy, dispatch, probe subset bitmask, and claim preset; `__proto__` and constructor keys are blocked via `Object.prototype.hasOwnProperty` checks.
+  - **In-Page Self-Test Runner:** 16 deterministic self-tests covering SHA-256 known-answer vectors, scoring invariants, dominance checks, CSV escaping, tamper detection, and codec round-trips.
 - **Synthesized Web Audio & Printable Field Guide:**
   - Uses the browser Web Audio API to synthesize tactile mechanical relay and stamp acoustics (with a one-click mute toggle) and formats into a printable Lateral Reading Field Guide via `Cmd/Ctrl + P`.
 
@@ -45,6 +52,8 @@ Run the verification suite locally:
 npm test
 npm run verify:matrix
 ```
+
+`npm test` runs **390** Node tests across three suites (`tests/sourcedesk.test.js`, `tests/dom-smoke.test.js`, `tests/calibration-lab.test.js`), covering the scoring engine, static DOM/accessibility hygiene, and the full Calibration Lab surface: every strategy replay, all 96 payoff-matrix cells, all claim presets, SHA-256 known-answer vectors, canonical JSON, CSV formula-injection escaping, export digest parity, tamper verification, `#sd=` round-trips, and hostile-input rejection (`NaN`, `Infinity`, `-0`, out-of-range masks, unknown dispatch ids, XSS strings, `__proto__`). `npm run verify:matrix` exhaustively confirms scoring invariants across the full 592,704-combination automated bot playtest space.
 
 ## AI Tool Assistance Disclosure
 

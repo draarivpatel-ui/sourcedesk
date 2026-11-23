@@ -487,6 +487,15 @@ function rerender() {
       target.focus();
     }
   }
+  broadcastGameState();
+}
+
+// Broadcast desk state for the Calibration Lab export bar; listeners stay
+// decoupled from this module's private gameState.
+function broadcastGameState() {
+  document.dispatchEvent(
+    new CustomEvent("sourcedesk:game-state", { detail: gameState })
+  );
 }
 
 // Print-only field guide: key findings and verdicts for all 6 dispatches so a
@@ -540,6 +549,7 @@ function initSourceDeskApp() {
 
   renderAll();
   renderPrintGuide();
+  broadcastGameState();
 
   document.addEventListener("click", (event) => {
     const tabBtn = event.target.closest("[data-dispatch-index]");
