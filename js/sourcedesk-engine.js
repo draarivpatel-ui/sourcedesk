@@ -569,7 +569,8 @@ export function calculateRoundScore({
   const blindGuessPenalty = probes.length === 0 ? 25 : 0;
 
   // Streak bonus (up to +5 points when correct and on an active streak)
-  const safeStreak = Math.max(0, Number(currentStreak) || 0);
+  const numericStreak = Number(currentStreak);
+  const safeStreak = Number.isFinite(numericStreak) ? Math.max(0, Math.floor(numericStreak)) : 0;
   const streakBonus = isCorrect ? Math.min(5, safeStreak) : 0;
 
   const rawScore =
@@ -615,6 +616,9 @@ export function submitDispatchStamp(state, dispatchId, selectedStamp) {
   const dispatch = getDispatchById(dispatchId);
   if (!dispatch) {
     throw new Error(`Unknown dispatch id: ${String(dispatchId)}`);
+  }
+  if (!Object.values(STAMP_TYPES).includes(selectedStamp)) {
+    throw new Error(`Invalid stamp type: ${String(selectedStamp)}`);
   }
 
   const previousDecision = state.decisionsByDispatch[dispatchId];
@@ -701,8 +705,11 @@ export function submitDispatchStamp(state, dispatchId, selectedStamp) {
 }
 
 export function computeNewsroomRating(totalScore, completedCount = DISPATCHES.length) {
-  const count = Math.max(1, Number(completedCount) || 1);
-  const averageScore = totalScore / count;
+  const numericCount = Number(completedCount);
+  const count = Number.isFinite(numericCount) && numericCount > 0 ? Math.max(1, Math.floor(numericCount)) : 1;
+  const numericScore = Number(totalScore);
+  const safeScore = Number.isFinite(numericScore) ? Math.max(0, numericScore) : 0;
+  const averageScore = safeScore / count;
 
   if (averageScore >= 90) {
     return {
@@ -817,7 +824,9 @@ export function resolveKeyboardShortcut(key, isInputFocused = false) {
 }
 
 export function selectDispatchIndex(state, nextIndex) {
-  const numeric = Number(nextIndex);
+  const numeric = typeof nextIndex === "number" || (typeof nextIndex === "string" && nextIndex.trim() !== "")
+    ? Number(nextIndex)
+    : NaN;
   if (!Number.isInteger(numeric) || numeric < 0 || numeric >= DISPATCHES.length) {
     throw new Error(`Invalid dispatch index: ${String(nextIndex)}`);
   }

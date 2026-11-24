@@ -316,12 +316,16 @@
       return null;
     }
     var payload = h.slice(HASH_PREFIX.length);
-    if (!B64_ALPHANUM.test(payload)) {
+    if (!B64_ALPHANUM.test(payload) || payload.length % 4 === 1) {
       return null;
     }
     var compact;
     try {
-      compact = JSON.parse(b64urlDecode(payload));
+      var decodedText = b64urlDecode(payload);
+      if (decodedText !== decodedText.trim()) {
+        return null;
+      }
+      compact = JSON.parse(decodedText);
     } catch (err) {
       return null;
     }
@@ -729,10 +733,14 @@
           rows.push(normalizeDecisionRecord(dispatch, dec));
         }
       }
+      var validDecisions = {};
+      for (var dIndex = 0; dIndex < rows.length; dIndex += 1) {
+        validDecisions[rows[dIndex].dispatchId] = decisions[rows[dIndex].dispatchId];
+      }
       var progress;
       try {
         progress = engine.getDispatchProgressSummary({
-          decisionsByDispatch: decisions,
+          decisionsByDispatch: validDecisions,
           totalScore: numOr(safe.totalScore, 0),
         });
       } catch (err) {
