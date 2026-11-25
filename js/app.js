@@ -99,11 +99,11 @@ function buildForensicGraphicSvg(dispatch) {
     return `
       <svg class="forensic-svg" viewBox="0 0 520 150" role="img" aria-label="Comparison of truncated axis 88 to 92 versus zero baseline 0 to 100">
         <rect x="8" y="8" width="240" height="134" rx="4" fill="#EFECE3" stroke="#121619" stroke-width="1.5"/>
-        <text x="20" y="28" fill="#B45309" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">VIRAL: Y-AXIS [88.0 - 92.0]</text>
+        <text x="20" y="28" fill="#A84B08" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">VIRAL: Y-AXIS [88.0 - 92.0]</text>
         <line x1="36" y1="42" x2="36" y2="122" stroke="#121619" stroke-width="1.5"/>
         <line x1="36" y1="122" x2="226" y2="122" stroke="#121619" stroke-width="1.5"/>
-        <rect x="64" y="48" width="46" height="74" fill="#D9381E"/>
-        <rect x="146" y="112" width="46" height="10" fill="#B45309"/>
+        <rect x="64" y="48" width="46" height="74" fill="#C92E16"/>
+        <rect x="146" y="112" width="46" height="10" fill="#A84B08"/>
         <text x="65" y="136" fill="#121619" font-family="JetBrains Mono, monospace" font-size="10">TUE 91.6</text>
         <text x="145" y="136" fill="#121619" font-family="JetBrains Mono, monospace" font-size="10">WED 88.4</text>
 
@@ -123,10 +123,10 @@ function buildForensicGraphicSvg(dispatch) {
     return `
       <svg class="forensic-svg" viewBox="0 0 520 150" role="img" aria-label="Comparison of 8 kHz synthetic TTS spectral shelf versus 20 kHz natural voice spectrum">
         <rect x="8" y="8" width="240" height="134" rx="4" fill="#121619" stroke="#121619" stroke-width="1.5"/>
-        <text x="20" y="28" fill="#D9381E" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">SYNTHETIC CLIP: 8.0 kHz CUTOFF</text>
-        <line x1="20" y1="74" x2="236" y2="74" stroke="#D9381E" stroke-dasharray="4 3" stroke-width="1.5"/>
+        <text x="20" y="28" fill="#C92E16" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">SYNTHETIC CLIP: 8.0 kHz CUTOFF</text>
+        <line x1="20" y1="74" x2="236" y2="74" stroke="#C92E16" stroke-dasharray="4 3" stroke-width="1.5"/>
         <text x="24" y="67" fill="#F6F3EC" font-family="JetBrains Mono, monospace" font-size="9">EMPTY BAND ABOVE 8.0 kHz</text>
-        <path d="M22 115 Q45 82 68 112 T114 108 T160 114 T206 106 L234 115" fill="none" stroke="#D9381E" stroke-width="2"/>
+        <path d="M22 115 Q45 82 68 112 T114 108 T160 114 T206 106 L234 115" fill="none" stroke="#C92E16" stroke-width="2"/>
 
         <rect x="272" y="8" width="240" height="134" rx="4" fill="#121619" stroke="#121619" stroke-width="1.5"/>
         <text x="284" y="28" fill="#2DD4BF" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">NATURAL VOICE: FULL 20.0 kHz</text>
@@ -139,8 +139,8 @@ function buildForensicGraphicSvg(dispatch) {
   return `
     <svg class="forensic-svg" viewBox="0 0 520 150" role="img" aria-label="Forensic discrepancy comparison diagram">
       <rect x="8" y="8" width="240" height="134" rx="4" fill="#EFECE3" stroke="#121619" stroke-width="1.5"/>
-      <text x="20" y="30" fill="#B45309" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">VIRAL ARTIFACT TRACE</text>
-      <rect x="20" y="42" width="216" height="58" rx="3" fill="#F6F3EC" stroke="#B45309" stroke-dasharray="4 3" stroke-width="1.5"/>
+      <text x="20" y="30" fill="#A84B08" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">VIRAL ARTIFACT TRACE</text>
+      <rect x="20" y="42" width="216" height="58" rx="3" fill="#F6F3EC" stroke="#A84B08" stroke-dasharray="4 3" stroke-width="1.5"/>
       <text x="30" y="75" fill="#121619" font-family="JetBrains Mono, monospace" font-size="11">${dispatch.artifactData.viralMetric}</text>
       <text x="20" y="124" fill="#121619" font-family="Space Grotesk, sans-serif" font-size="11">${dispatch.sourceOutlet}</text>
 

@@ -82,9 +82,9 @@
   --rule-subtle: #C9C3B4;
   --emerald-verified: #0F766E;
   --emerald-surface: #E2F2EF;
-  --amber-context: #B45309;
+  --amber-context: #A84B08;
   --amber-surface: #F9EBDC;
-  --vermilion-stamp: #D9381E;
+  --vermilion-stamp: #C92E16;
   --vermilion-surface: #FCE8E4;
   --font-display: "Instrument Serif", Georgia, serif;
   --font-sans: "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -1333,6 +1333,11 @@ p {
   height: auto;
 }
 
+
+.hm-mobile-matrix {
+  display: none;
+}
+
 .hm-col-label {
   font-family: var(--font-mono);
   font-size: 9px;
@@ -1589,6 +1594,78 @@ p {
   .telemetry-strip,
   .claim-preset-row {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .heatmap-scroll {
+    overflow-x: visible;
+    padding: 0.65rem;
+  }
+
+  .payoff-heatmap {
+    display: none;
+  }
+
+  .hm-mobile-matrix {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .hm-mobile-row {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .hm-mobile-row-title {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--ink-primary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hm-mobile-cells {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.4rem;
+  }
+
+  .hm-mobile-cell {
+    appearance: none;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 0.1rem;
+    min-width: 0;
+    min-height: 52px;
+    padding: 0.28rem 0.2rem;
+    border: 1.5px solid var(--rule-ink);
+    border-radius: 4px;
+    color: var(--ink-primary);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+  }
+
+  .hm-mobile-cell.is-optimal {
+    border-width: 2.5px;
+  }
+
+  .hm-mobile-cell.is-selected-cell {
+    outline: 3px solid var(--vermilion-stamp);
+    outline-offset: 1px;
+  }
+
+  .hm-mobile-mask {
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .hm-mobile-probes {
+    font-size: 0.66rem;
+    line-height: 1.15;
   }
 }
 

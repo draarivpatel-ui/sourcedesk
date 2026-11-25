@@ -178,6 +178,7 @@ import * as engine from "./sourcedesk-engine.js";
           "aria-label",
           `${row.code} subset mask ${m}: ${cell.probeCount} probes, score ${cell.roundScore}`
         );
+        g.setAttribute("aria-pressed", ATTR_FALSE);
 
         const rect = document.createElementNS(svgNS, "rect");
         rect.setAttribute("x", String(LABEL_W + m * (CELL + GAP)));
@@ -211,8 +212,49 @@ import * as engine from "./sourcedesk-engine.js";
     legend.textContent = "Rows: 6 dispatches | Columns: probe-subset mask 0-15 | Cell number: probes inspected | Bold border: optimal key pair";
     svg.appendChild(legend);
 
+    const mobile = document.createElement("div");
+    mobile.setAttribute("class", "hm-mobile-matrix");
+    matrix.rows.forEach((row, r) => {
+      const group = document.createElement("div");
+      group.setAttribute("class", "hm-mobile-row");
+      const title = document.createElement("div");
+      title.setAttribute("class", "hm-mobile-row-title");
+      title.textContent = `${row.code} probe-subset masks`;
+      group.appendChild(title);
+      const grid = document.createElement("div");
+      grid.setAttribute("class", "hm-mobile-cells");
+      row.cells.forEach((cell, m) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.setAttribute("class", "hm-mobile-cell");
+        if (m === row.optimalMask) {
+          btn.classList.add("is-optimal");
+        }
+        btn.dataset.dispatchIdx = String(r);
+        btn.dataset.mask = String(m);
+        btn.setAttribute(
+          "aria-label",
+          `${row.code} subset mask ${m}: ${cell.probeCount} probes, score ${cell.roundScore}`
+        );
+        btn.setAttribute("aria-pressed", ATTR_FALSE);
+        btn.style.backgroundColor = cellFill(cell.roundScore);
+        const maskText = document.createElement("span");
+        maskText.setAttribute("class", "hm-mobile-mask");
+        maskText.textContent = `mask ${m}`;
+        const probeText = document.createElement("span");
+        probeText.setAttribute("class", "hm-mobile-probes");
+        probeText.textContent = `${cell.probeCount} probes | ${cell.roundScore}`;
+        btn.appendChild(maskText);
+        btn.appendChild(probeText);
+        grid.appendChild(btn);
+      });
+      group.appendChild(grid);
+      mobile.appendChild(group);
+    });
+
     holder.innerHTML = "";
     holder.appendChild(svg);
+    holder.appendChild(mobile);
   }
 
   function selectCell(dispatchIdx, mask, opts) {
@@ -227,10 +269,11 @@ import * as engine from "./sourcedesk-engine.js";
     }
     labState.dp = dispatchIdx;
     labState.pm = mask;
-    document.querySelectorAll(".hm-cell").forEach((g) => {
+    document.querySelectorAll(".hm-cell, .hm-mobile-cell").forEach((g) => {
       const match =
         Number(g.dataset.dispatchIdx) === dispatchIdx && Number(g.dataset.mask) === mask;
       g.classList.toggle("is-selected-cell", match);
+      g.setAttribute("aria-pressed", match ? ATTR_TRUE : ATTR_FALSE);
     });
     const detail = $("payoff-cell-detail");
     if (detail) {
@@ -477,6 +520,11 @@ import * as engine from "./sourcedesk-engine.js";
     const hmCell = event.target.closest(".hm-cell");
     if (hmCell) {
       selectCell(Number(hmCell.dataset.dispatchIdx), Number(hmCell.dataset.mask));
+      return;
+    }
+    const hmMobileCell = event.target.closest(".hm-mobile-cell");
+    if (hmMobileCell) {
+      selectCell(Number(hmMobileCell.dataset.dispatchIdx), Number(hmMobileCell.dataset.mask));
       return;
     }
     const presetBtn = event.target.closest(".preset-btn");
