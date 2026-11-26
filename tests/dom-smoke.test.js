@@ -169,3 +169,12 @@ test("DOM Smoke 20: full 6-dispatch game loop achieves 585/600 S-Rank when key p
   assert.equal(summary.rating.grade, "S");
   assert.equal(state.totalScore, 585);
 });
+
+test("DOM Smoke 21: print field guide removes screen-only controls and custom input chrome", () => {
+  const printStart = stylesCss.indexOf("@media print");
+  assert.notEqual(printStart, -1);
+  const printCss = stylesCss.slice(printStart);
+  assert.match(printCss, /button,\s*input,\s*select,\s*textarea\s*\{/);
+  assert.match(printCss, /\.compare-mode-group,/);
+  assert.match(printCss, /\.custom-input-group,/);
+});

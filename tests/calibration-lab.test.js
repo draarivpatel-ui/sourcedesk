@@ -1071,7 +1071,7 @@ describe("Lab Integration & Hygiene Guards", () => {
 
   it("G4. lab section is hidden in @media print", () => {
     const printBlock = stylesCss.slice(stylesCss.indexOf("@media print"));
-    assert.match(printBlock, /\.calibration-lab-section\s*\{[^}]*display:\s*none/);
+    assert.match(printBlock, /\.calibration-lab-section\s*,[\s\S]*?\{\s*display:\s*none/);
   });
 
   it("G5. zero em-dashes or en-dashes across all new lab code and markup", () => {

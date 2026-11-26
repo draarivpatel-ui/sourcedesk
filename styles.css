@@ -1698,7 +1698,13 @@ p {
   .hero-artwork-frame,
   .wire-queue-panel,
   .stamp-buttons-row,
-  .calibration-lab-section {
+  .compare-mode-group,
+  .custom-input-group,
+  .calibration-lab-section,
+  button,
+  input,
+  select,
+  textarea {
     display: none !important;
   }
 
