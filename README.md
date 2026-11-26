@@ -53,7 +53,7 @@ npm test
 npm run verify:matrix
 ```
 
-`npm test` runs **397** Node tests across four suites (`tests/sourcedesk.test.js`, `tests/dom-smoke.test.js`, `tests/calibration-lab.test.js`, `tests/revamp-regression.test.js`), covering the scoring engine, static DOM/accessibility hygiene, and the full Calibration Lab surface: every strategy replay, all 96 payoff-matrix cells, all claim presets, SHA-256 known-answer vectors, canonical JSON, CSV formula-injection escaping, export digest parity, tamper verification, `#sd=` round-trips, and hostile-input rejection (`NaN`, `Infinity`, `-0`, out-of-range masks, unknown dispatch ids, XSS strings, `__proto__`). `npm run verify:matrix` exhaustively confirms scoring invariants across the full 592,704-combination automated bot playtest space.
+`npm test` runs **398** Node tests across five suites (`tests/sourcedesk.test.js`, `tests/dom-smoke.test.js`, `tests/calibration-lab.test.js`, `tests/revamp-regression.test.js`, `tests/batch5-security.test.js`), covering the scoring engine, static DOM/accessibility hygiene, and the full Calibration Lab surface: every strategy replay, all 96 payoff-matrix cells, all claim presets, SHA-256 known-answer vectors, canonical JSON, CSV formula-injection escaping, export digest parity, tamper verification, `#sd=` round-trips, and hostile-input rejection (`NaN`, `Infinity`, `-0`, out-of-range masks, unknown dispatch ids, XSS strings, `__proto__`). `npm run verify:matrix` exhaustively confirms scoring invariants across the full 592,704-combination automated bot playtest space.
 
 ## AI Tool Assistance Disclosure
 

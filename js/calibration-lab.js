@@ -236,12 +236,16 @@
    * -------------------------------------------------------------------------------- */
 
   function csvTextCell(value) {
-    var s = String(value == null ? "" : value);
+    if (value === null || value === undefined) return "";
+    if (typeof value === "number") return Number.isFinite(value) ? String(value) : "";
+    var s = String(value);
     if (s === "") {
       return "";
     }
+    var lead = (s.match(/^[\s\p{Cc}\p{Cf}\u00ad\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufe00-\ufe0f\ufeff]*/u) || [""])[0];
+    var rest = s.slice(lead.length);
     var out = s.replace(/"/g, '""');
-    if (/^[=+\-@\t \r\n]/.test(out)) {
+    if (lead.length > 0 || /^[=+\-@]/.test(rest)) {
       out = "'" + out;
     }
     if (/[\r\n"]/.test(s) || s.indexOf(",") !== -1 || out !== s) {
@@ -904,7 +908,7 @@
         return { valid: false, reason: "report carries no SHA-256 integrity digest", expectedSha: null, actualSha: null };
       }
       var expected = integrity.canonicalJsonSha256;
-      var body = {};
+      var body = Object.create(null);
       var rKeys = Object.keys(report);
       for (var i9 = 0; i9 < rKeys.length; i9 += 1) {
         if (rKeys[i9] !== "integrity") {
