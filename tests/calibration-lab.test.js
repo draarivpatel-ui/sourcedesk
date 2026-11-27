@@ -1124,9 +1124,9 @@ describe("Lab Integration & Hygiene Guards", () => {
       ["calibration-lab-ui.js", labUiJs],
       ["styles.css", stylesCss],
     ]) {
-      assert.equal(/someone@gmail\.com/i.test(text), false, name);
-      assert.equal(/handle-redacted286@gmail\.com/i.test(text), false, name);
-      assert.equal(/Exampleton\s+Manor/i.test(text), false, name);
+      assert.equal(/[a-z0-9._%+-]+@gmail\.com/i.test(text), false, name);
+      assert.equal(/\b\d{3,5}\s+[A-Z][a-z]+\s+(Manor|Drive|Dr|Lane|Ln|Street|St|Road|Rd|Court|Ct|Way)\b/.test(text), false, name);
+      assert.equal(/\(?\b\d{3}\)?[-.\s]\d{3}[-.]\d{4}\b/.test(text), false, name);
     }
   });
 
